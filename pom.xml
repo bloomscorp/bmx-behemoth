@@ -10,10 +10,10 @@
         <version>3.0.5</version>
         <relativePath/>
     </parent>
-
+clear
     <groupId>com.bloomscorp</groupId>
     <artifactId>bmx-behemoth</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.3</version>
     <packaging>jar</packaging>
     <inceptionYear>2023</inceptionYear>
     <url>https://github.com/bloomscorp/bmx-behemoth</url>
@@ -25,7 +25,7 @@
     </properties>
 
     <description>
-
+        A lightweight Java library on top of spring-hibernate for managing opinionated CRUD operations.
     </description>
 
     <issueManagement>
@@ -89,6 +89,11 @@
             <version>1.18.26</version>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>com.bloomscorp</groupId>
+            <artifactId>nverse</artifactId>
+            <version>0.0.1</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -137,7 +142,7 @@
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.13</version>
+                <version>1.6.12</version>
                 <extensions>true</extensions>
                 <configuration>
                     <serverId>ossrh</serverId>

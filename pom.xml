@@ -12,7 +12,7 @@
         <version>3.0.5</version>
         <relativePath/>
     </parent>
-clear
+
     <groupId>com.bloomscorp</groupId>
     <artifactId>bmx-behemoth</artifactId>
     <version>0.0.4</version>

@@ -9,6 +9,7 @@ import com.bloomscorp.behemoth.worker.BehemothControllerWorker;
 import com.bloomscorp.nverse.NVerseAuthorityResolver;
 import com.bloomscorp.nverse.NVerseGatekeeper;
 import com.bloomscorp.nverse.NVerseHttpRequestWrapper;
+import com.bloomscorp.nverse.pojo.NVerseRole;
 import com.bloomscorp.nverse.pojo.NVerseTenant;
 import com.bloomscorp.nverse.sanitizer.HttpRequestDumpSanitizer;
 import com.bloomscorp.raintree.RainTree;
@@ -19,19 +20,20 @@ import lombok.Setter;
 @Getter
 @RequiredArgsConstructor
 public abstract class AbstractGetEntityController<
-    B extends LogBook<L, A, T, E>,
+    B extends LogBook<L, A, T, E, R>,
     L extends Log,
     A extends AuthenticationLog,
-    T extends NVerseTenant<E>,
-    E extends Enum<E>
+    T extends NVerseTenant<E, R>,
+    E extends Enum<E>,
+    R extends NVerseRole<E>
 > implements GetEntityController {
 
 
     private final RainTree rainTree;
-    private final LogBook<L, A, T, E> logBook;
-    private final CronManager<B, L, A, T, E> cron;
-    private final NVerseGatekeeper<T, E> gatekeeper;
-    private final NVerseAuthorityResolver<T, E> authorityResolver;
+    private final LogBook<L, A, T, E, R> logBook;
+    private final CronManager<B, L, A, T, E, R> cron;
+    private final NVerseGatekeeper<T, E, R> gatekeeper;
+    private final NVerseAuthorityResolver<T, E, R> authorityResolver;
     private final HttpRequestDumpSanitizer httpRequestDumpSanitizer;
 
     @Setter
@@ -46,7 +48,7 @@ public abstract class AbstractGetEntityController<
             W worker
     ) {
 
-        BehemothPreCheck<B, L, A, T, E> preCheck = new BehemothPreCheck<>(
+        BehemothPreCheck<B, L, A, T, E, R> preCheck = new BehemothPreCheck<>(
             this.rainTree,
             this.logBook,
             this.cron,

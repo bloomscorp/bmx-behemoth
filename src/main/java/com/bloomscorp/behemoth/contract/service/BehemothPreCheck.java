@@ -11,6 +11,7 @@ import com.bloomscorp.nverse.NVerseAuthorityResolver;
 import com.bloomscorp.nverse.NVerseGatekeeper;
 import com.bloomscorp.nverse.NVerseHttpRequestWrapper;
 import com.bloomscorp.nverse.NVerseSurveillanceReport;
+import com.bloomscorp.nverse.pojo.NVerseRole;
 import com.bloomscorp.nverse.pojo.NVerseTenant;
 import com.bloomscorp.nverse.sanitizer.HttpRequestDumpSanitizer;
 import com.bloomscorp.nverse.support.Constant;
@@ -22,18 +23,19 @@ import org.jetbrains.annotations.NotNull;
 @Getter
 @RequiredArgsConstructor
 public class BehemothPreCheck<
-	B extends LogBook<L, A, T, E>,
+	B extends LogBook<L, A, T, E, R>,
 	L extends Log,
 	A extends AuthenticationLog,
-	T extends NVerseTenant<E>,
-	E extends Enum<E>
+	T extends NVerseTenant<E, R>,
+	E extends Enum<E>,
+	R extends NVerseRole<E>
 > {
 
 	private final RainTree rainTree;
-	private final LogBook<L, A, T, E> logBook;
-	private final CronManager<B, L, A, T, E> cron;
-	private final NVerseGatekeeper<T, E> gatekeeper;
-	private final NVerseAuthorityResolver<T, E> authorityResolver;
+	private final LogBook<L, A, T, E, R> logBook;
+	private final CronManager<B, L, A, T, E, R> cron;
+	private final NVerseGatekeeper<T, E, R> gatekeeper;
+	private final NVerseAuthorityResolver<T, E, R> authorityResolver;
 	private final HttpRequestDumpSanitizer httpRequestDumpSanitizer;
 
 	private NVerseSurveillanceReport surveillanceReport;

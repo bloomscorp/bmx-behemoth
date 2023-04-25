@@ -3,12 +3,14 @@ package com.bloomscorp.behemoth.orm;
 import com.bloomscorp.behemoth.contract.BehemothContract;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.Setter;
 
 @MappedSuperclass
 public class BehemothORM {
 
     @Id
+    @Getter
     @Column(
             name = BehemothContract.ID,
             columnDefinition = "BIGSERIAL",

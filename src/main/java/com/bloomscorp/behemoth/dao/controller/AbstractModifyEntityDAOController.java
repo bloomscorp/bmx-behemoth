@@ -10,7 +10,7 @@ import java.util.List;
 public abstract class AbstractModifyEntityDAOController<
 	E extends BehemothORM,
 	R extends JpaRepository<E, Long>
-	> extends AbstractAddEntityDAOController<E, R> implements ModifyEntityDAOController<E> {
+> extends AbstractAddEntityDAOController<E, R> implements ModifyEntityDAOController<E> {
 
 	public AbstractModifyEntityDAOController(R repository) {
 		super(repository);

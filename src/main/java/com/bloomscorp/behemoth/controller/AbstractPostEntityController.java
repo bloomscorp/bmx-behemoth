@@ -52,25 +52,6 @@ public abstract class AbstractPostEntityController<
 		);
 	}
 
-//	private <N, W extends BehemothControllerWorker<Integer>> @NotNull RainTreeResponse post(
-//		@NotNull NVerseValidator<N> validator,
-//		N entity,
-//		@NotNull NVerseSanitizer<N, N> sanitizer,
-//		W worker
-//	) {
-//
-//		if (!validator.validate(
-//			sanitizer.getSanitized(entity)
-//		)) return new RainTreeResponse(
-//			false,
-//			ErrorCode.decode(
-//				ErrorCode.INVALID_INFORMATION
-//			)
-//		);
-//
-//		return RainResponse.prepareActionResponse(worker.work());
-//	}
-
 	private <
 		N,
 		W extends BehemothControllerWorker<P>,

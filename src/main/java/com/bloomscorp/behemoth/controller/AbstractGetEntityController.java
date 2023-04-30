@@ -41,11 +41,11 @@ public abstract class AbstractGetEntityController<
 
     @Override
     public <W extends BehemothControllerWorker<String>> String getEntity(
-            NVerseHttpRequestWrapper request,
-            String methodName,
-            int surveillanceCode,
-            String unAuthAccessMessage,
-            W worker
+        NVerseHttpRequestWrapper request,
+        String methodName,
+        int surveillanceCode,
+        String unAuthAccessMessage,
+        W worker
     ) {
 
         BehemothPreCheck<B, L, A, T, E, R> preCheck = new BehemothPreCheck<>(
@@ -58,11 +58,11 @@ public abstract class AbstractGetEntityController<
         );
 
         if (!preCheck.success(
-                request,
-                surveillanceCode,
-                unAuthAccessMessage,
-                this.className,
-                methodName
+            request,
+            surveillanceCode,
+            unAuthAccessMessage,
+            this.className,
+            methodName
         )) return preCheck.failureResponse();
 
         return worker.work();

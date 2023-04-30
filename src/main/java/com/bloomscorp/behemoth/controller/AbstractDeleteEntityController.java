@@ -16,6 +16,7 @@ import com.bloomscorp.nverse.pojo.NVerseTenant;
 import com.bloomscorp.nverse.sanitizer.HttpRequestDumpSanitizer;
 import com.bloomscorp.raintree.RainTree;
 import com.bloomscorp.raintree.RainTreeResponse;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class AbstractDeleteEntityController<
@@ -45,7 +46,8 @@ public abstract class AbstractDeleteEntityController<
 		);
 	}
 
-	private String prepareResponseMessage(boolean success) {
+	@Contract(pure = true)
+	private @NotNull String prepareResponseMessage(boolean success) {
 		return ActionCode.message(success ? ActionCode.DELETE_SUCCESS : ActionCode.DELETE_FAILURE);
 	}
 

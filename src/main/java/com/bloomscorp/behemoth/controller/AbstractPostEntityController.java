@@ -6,6 +6,9 @@ import com.bloomscorp.alfred.orm.AuthenticationLog;
 import com.bloomscorp.alfred.orm.LOG_TYPE;
 import com.bloomscorp.alfred.orm.Log;
 import com.bloomscorp.alfred.support.ReporterID;
+import com.bloomscorp.behemoth.pojo.BehemothMiddlewareResult;
+import com.bloomscorp.behemoth.service.BehemothMiddleware;
+import com.bloomscorp.behemoth.service.BehemothMiddlewareRunner;
 import com.bloomscorp.behemoth.service.BehemothPreCheck;
 import com.bloomscorp.behemoth.worker.BehemothControllerWorker;
 import com.bloomscorp.hastar.code.ErrorCode;
@@ -22,6 +25,9 @@ import com.bloomscorp.raintree.RainTreeResponse;
 import com.bloomscorp.raintree.restful.RainEnhancedResponse;
 import com.bloomscorp.raintree.restful.RainResponse;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class AbstractPostEntityController<
 	B extends LogBook<L, A, T, E, R>,
@@ -98,6 +104,7 @@ public abstract class AbstractPostEntityController<
 		NVerseValidator<N> validator,
 		NVerseSanitizer<N, N> sanitizer,
 		N entity,
+		List<BehemothMiddleware<?, ?>> middlewares,
 		W worker
 	) {
 		return this.postEntityEnhancedResponse(
@@ -109,8 +116,35 @@ public abstract class AbstractPostEntityController<
 			validator,
 			sanitizer,
 			entity,
+			middlewares,
 			worker,
 			null
+		);
+	}
+
+	@Override
+	public <N, W extends BehemothControllerWorker<Integer>> RainTreeResponse postEntity(
+		NVerseHttpRequestWrapper request,
+		String methodName,
+		int surveillanceCode,
+		String unAuthPostMessage,
+		String successLogMessage,
+		NVerseValidator<N> validator,
+		NVerseSanitizer<N, N> sanitizer,
+		N entity,
+		W worker
+	) {
+		return this.postEntity(
+			request,
+			methodName,
+			surveillanceCode,
+			unAuthPostMessage,
+			successLogMessage,
+			validator,
+			sanitizer,
+			entity,
+			new ArrayList<>(),
+			worker
 		);
 	}
 
@@ -128,6 +162,7 @@ public abstract class AbstractPostEntityController<
 		NVerseValidator<N> validator,
 		NVerseSanitizer<N, N> sanitizer,
 		N entity,
+		List<BehemothMiddleware<?, ?>> middlewares,
 		W worker,
 		RainEnhancedResponse<N, P> enhancedResponse
 	) {
@@ -152,6 +187,14 @@ public abstract class AbstractPostEntityController<
 			preCheck.failureMessage()
 		);
 
+		BehemothMiddlewareResult middlewareResult = BehemothMiddlewareRunner.run(middlewares);
+
+		if (!middlewareResult.success())
+			return new RainTreeResponse(
+				false,
+				middlewareResult.middleware().getErrorMessage()
+			);
+
 		RainTreeResponse response = this.post(validator, entity, sanitizer, worker, enhancedResponse);
 
 		if (response.success)
@@ -171,6 +214,38 @@ public abstract class AbstractPostEntityController<
 	}
 
 	@Override
+	public <
+		N,
+		W extends BehemothControllerWorker<P>,
+		P
+		> RainTreeResponse postEntityEnhancedResponse(
+		NVerseHttpRequestWrapper request,
+		String methodName,
+		int surveillanceCode,
+		String unAuthPostMessage,
+		String successLogMessage,
+		NVerseValidator<N> validator,
+		NVerseSanitizer<N, N> sanitizer,
+		N entity,
+		W worker,
+		RainEnhancedResponse<N, P> enhancedResponse
+	) {
+		return this.postEntityEnhancedResponse(
+			request,
+			methodName,
+			surveillanceCode,
+			unAuthPostMessage,
+			successLogMessage,
+			validator,
+			sanitizer,
+			entity,
+			new ArrayList<>(),
+			worker,
+			enhancedResponse
+		);
+	}
+
+	@Override
 	public <N, W extends BehemothControllerWorker<Integer>> RainTreeResponse postEntityUnauthorized(
 		NVerseHttpRequestWrapper request,
 		String methodName,
@@ -178,6 +253,7 @@ public abstract class AbstractPostEntityController<
 		NVerseValidator<N> validator,
 		NVerseSanitizer<N, N> sanitizer,
 		N entity,
+		List<BehemothMiddleware<?, ?>> middlewares,
 		W worker
 	) {
 		return this.postEntityEnhancedResponseUnauthorized(
@@ -187,8 +263,31 @@ public abstract class AbstractPostEntityController<
 			validator,
 			sanitizer,
 			entity,
+			middlewares,
 			worker,
 			null
+		);
+	}
+
+	@Override
+	public <N, W extends BehemothControllerWorker<Integer>> RainTreeResponse postEntityUnauthorized(
+		NVerseHttpRequestWrapper request,
+		String methodName,
+		String successLogMessage,
+		NVerseValidator<N> validator,
+		NVerseSanitizer<N, N> sanitizer,
+		N entity,
+		W worker
+	) {
+		return this.postEntityUnauthorized(
+			request,
+			methodName,
+			successLogMessage,
+			validator,
+			sanitizer,
+			entity,
+			new ArrayList<>(),
+			worker
 		);
 	}
 
@@ -200,9 +299,18 @@ public abstract class AbstractPostEntityController<
 		NVerseValidator<N> validator,
 		NVerseSanitizer<N, N> sanitizer,
 		N entity,
+		List<BehemothMiddleware<?, ?>> middlewares,
 		W worker,
 		RainEnhancedResponse<N, P> enhancedResponse
 	) {
+
+		BehemothMiddlewareResult middlewareResult = BehemothMiddlewareRunner.run(middlewares);
+
+		if (!middlewareResult.success())
+			return new RainTreeResponse(
+				false,
+				middlewareResult.middleware().getErrorMessage()
+			);
 
 		RainTreeResponse response = this.post(validator, entity, sanitizer, worker, enhancedResponse);
 
@@ -219,5 +327,29 @@ public abstract class AbstractPostEntityController<
 			);
 
 		return response;
+	}
+
+	@Override
+	public <N, W extends BehemothControllerWorker<P>, P> RainTreeResponse postEntityEnhancedResponseUnauthorized(
+		NVerseHttpRequestWrapper request,
+		String methodName,
+		String successLogMessage,
+		NVerseValidator<N> validator,
+		NVerseSanitizer<N, N> sanitizer,
+		N entity,
+		W worker,
+		RainEnhancedResponse<N, P> enhancedResponse
+	) {
+		return this.postEntityEnhancedResponseUnauthorized(
+			request,
+			methodName,
+			successLogMessage,
+			validator,
+			sanitizer,
+			entity,
+			new ArrayList<>(),
+			worker,
+			enhancedResponse
+		);
 	}
 }

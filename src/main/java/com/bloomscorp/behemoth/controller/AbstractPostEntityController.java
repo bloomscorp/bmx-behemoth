@@ -6,7 +6,7 @@ import com.bloomscorp.alfred.orm.AuthenticationLog;
 import com.bloomscorp.alfred.orm.LOG_TYPE;
 import com.bloomscorp.alfred.orm.Log;
 import com.bloomscorp.alfred.support.ReporterID;
-import com.bloomscorp.behemoth.contract.service.BehemothPreCheck;
+import com.bloomscorp.behemoth.service.BehemothPreCheck;
 import com.bloomscorp.behemoth.worker.BehemothControllerWorker;
 import com.bloomscorp.hastar.code.ErrorCode;
 import com.bloomscorp.nverse.NVerseAuthorityResolver;
@@ -21,8 +21,6 @@ import com.bloomscorp.raintree.RainTree;
 import com.bloomscorp.raintree.RainTreeResponse;
 import com.bloomscorp.raintree.restful.RainEnhancedResponse;
 import com.bloomscorp.raintree.restful.RainResponse;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class AbstractPostEntityController<

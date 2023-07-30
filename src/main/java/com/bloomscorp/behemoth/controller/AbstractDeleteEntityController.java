@@ -5,7 +5,7 @@ import com.bloomscorp.alfred.cron.CronManager;
 import com.bloomscorp.alfred.orm.AuthenticationLog;
 import com.bloomscorp.alfred.orm.Log;
 import com.bloomscorp.alfred.support.ReporterID;
-import com.bloomscorp.behemoth.contract.service.BehemothPreCheck;
+import com.bloomscorp.behemoth.service.BehemothPreCheck;
 import com.bloomscorp.behemoth.worker.BehemothControllerWorker;
 import com.bloomscorp.hastar.code.ActionCode;
 import com.bloomscorp.nverse.NVerseAuthorityResolver;

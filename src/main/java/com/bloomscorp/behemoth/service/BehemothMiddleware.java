@@ -1,4 +1,4 @@
-package com.bloomscorp.behemoth.contract.service;
+package com.bloomscorp.behemoth.service;
 
 public abstract class BehemothMiddleware<P, S extends BehemothMiddleware<P, ?>> {
 

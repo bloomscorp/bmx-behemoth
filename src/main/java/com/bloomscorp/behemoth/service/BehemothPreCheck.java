@@ -1,4 +1,4 @@
-package com.bloomscorp.behemoth.contract.service;
+package com.bloomscorp.behemoth.service;
 
 import com.bloomscorp.alfred.LogBook;
 import com.bloomscorp.alfred.cron.CronManager;

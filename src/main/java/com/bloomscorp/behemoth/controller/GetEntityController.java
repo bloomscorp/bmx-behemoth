@@ -1,6 +1,6 @@
 package com.bloomscorp.behemoth.controller;
 
-import com.bloomscorp.behemoth.contract.service.BehemothMiddleware;
+import com.bloomscorp.behemoth.service.BehemothMiddleware;
 import com.bloomscorp.behemoth.worker.BehemothControllerWorker;
 import com.bloomscorp.nverse.NVerseHttpRequestWrapper;
 

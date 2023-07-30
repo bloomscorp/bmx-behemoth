@@ -4,6 +4,7 @@ import com.bloomscorp.alfred.LogBook;
 import com.bloomscorp.alfred.cron.CronManager;
 import com.bloomscorp.alfred.orm.AuthenticationLog;
 import com.bloomscorp.alfred.orm.Log;
+import com.bloomscorp.behemoth.contract.service.BehemothMiddleware;
 import com.bloomscorp.behemoth.contract.service.BehemothPreCheck;
 import com.bloomscorp.behemoth.worker.BehemothControllerWorker;
 import com.bloomscorp.nverse.NVerseAuthorityResolver;
@@ -16,6 +17,9 @@ import com.bloomscorp.raintree.RainTree;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @RequiredArgsConstructor
@@ -45,6 +49,7 @@ public abstract class AbstractGetEntityController<
         String methodName,
         int surveillanceCode,
         String unAuthAccessMessage,
+        List<BehemothMiddleware<?, ?>> middlewares,
         W worker
     ) {
 
@@ -65,7 +70,33 @@ public abstract class AbstractGetEntityController<
             methodName
         )) return preCheck.failureResponse();
 
+        for (BehemothMiddleware<?, ?> middleware : middlewares) {
+            if (!middleware.execute()) {
+                return this.rainTree.failureResponse(
+                    middleware.getErrorMessage()
+                );
+            }
+        }
+
         return worker.work();
+    }
+
+    @Override
+    public <W extends BehemothControllerWorker<String>> String getEntity(
+        NVerseHttpRequestWrapper request,
+        String methodName,
+        int surveillanceCode,
+        String unAuthAccessMessage,
+        W worker
+    ) {
+        return this.getEntity(
+            request,
+            methodName,
+            surveillanceCode,
+            unAuthAccessMessage,
+            new ArrayList<>(),
+            worker
+        );
     }
 
     public abstract void init();

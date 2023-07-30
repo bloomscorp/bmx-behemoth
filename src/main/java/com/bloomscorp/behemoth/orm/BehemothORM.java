@@ -6,11 +6,11 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
+@Getter
 @MappedSuperclass
 public class BehemothORM {
 
     @Id
-    @Getter
     @Column(
             name = BehemothContract.ID,
             columnDefinition = "BIGSERIAL",

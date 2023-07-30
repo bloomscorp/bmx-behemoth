@@ -4,7 +4,9 @@ import com.bloomscorp.alfred.LogBook;
 import com.bloomscorp.alfred.cron.CronManager;
 import com.bloomscorp.alfred.orm.AuthenticationLog;
 import com.bloomscorp.alfred.orm.Log;
+import com.bloomscorp.behemoth.pojo.BehemothMiddlewareResult;
 import com.bloomscorp.behemoth.service.BehemothMiddleware;
+import com.bloomscorp.behemoth.service.BehemothMiddlewareRunner;
 import com.bloomscorp.behemoth.service.BehemothPreCheck;
 import com.bloomscorp.behemoth.worker.BehemothControllerWorker;
 import com.bloomscorp.nverse.NVerseAuthorityResolver;
@@ -70,13 +72,12 @@ public abstract class AbstractGetEntityController<
             methodName
         )) return preCheck.failureResponse();
 
-        for (BehemothMiddleware<?, ?> middleware : middlewares) {
-            if (!middleware.execute()) {
-                return this.rainTree.failureResponse(
-                    middleware.getErrorMessage()
-                );
-            }
-        }
+        BehemothMiddlewareResult middlewareResult = BehemothMiddlewareRunner.run(middlewares);
+
+        if (!middlewareResult.success())
+            return this.rainTree.failureResponse(
+                middlewareResult.middleware().getErrorMessage()
+            );
 
         return worker.work();
     }

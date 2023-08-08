@@ -9,13 +9,13 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.0.5</version>
+        <version>3.1.2</version>
         <relativePath/>
     </parent>
 
     <groupId>com.bloomscorp</groupId>
     <artifactId>bmx-behemoth</artifactId>
-    <version>0.0.11</version>
+    <version>0.0.12</version>
     <packaging>jar</packaging>
     <inceptionYear>2023</inceptionYear>
     <url>https://github.com/bloomscorp/bmx-behemoth</url>
@@ -73,7 +73,7 @@
         <dependency>
             <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>8.0.0.Final</version>
+            <version>8.0.1.Final</version>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
@@ -82,24 +82,24 @@
         </dependency>
         <dependency>
             <groupId>com.vladmihalcea</groupId>
-            <artifactId>hibernate-types-52</artifactId>
+            <artifactId>hibernate-types-60</artifactId>
             <version>2.21.1</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.26</version>
+            <version>1.18.28</version>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>com.bloomscorp</groupId>
             <artifactId>bmx-nverse</artifactId>
-            <version>0.0.29</version>
+            <version>0.0.30</version>
         </dependency>
         <dependency>
             <groupId>com.bloomscorp</groupId>
             <artifactId>bmx-raintree</artifactId>
-            <version>0.0.4</version>
+            <version>0.0.5</version>
         </dependency>
     </dependencies>
 

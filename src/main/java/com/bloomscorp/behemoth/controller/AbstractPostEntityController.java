@@ -23,6 +23,8 @@ import com.bloomscorp.nverse.validator.NVerseValidator;
 import com.bloomscorp.raintree.RainTree;
 import com.bloomscorp.raintree.RainTreeResponse;
 import com.bloomscorp.raintree.restful.RainEnhancedResponse;
+import com.bloomscorp.raintree.restful.RainEntity;
+import com.bloomscorp.raintree.restful.RainFailedEntity;
 import com.bloomscorp.raintree.restful.RainResponse;
 import org.jetbrains.annotations.NotNull;
 
@@ -83,6 +85,28 @@ public abstract class AbstractPostEntityController<
 			return RainResponse.prepareActionResponse((Integer) result);
 
 		return enhancedResponse.prepareResponse(result);
+	}
+
+	private <
+		N1,
+		N2,
+		W extends BehemothControllerWorker<RainEntity<N2>>
+		> @NotNull RainEntity<N2> post(
+		@NotNull NVerseValidator<N1> validator,
+		N1 entity,
+		@NotNull NVerseSanitizer<N1, N1> sanitizer,
+		W worker
+	) {
+
+		if (!validator.validate(
+			sanitizer.getSanitized(entity)
+		)) return new RainFailedEntity<>(
+			ErrorCode.decode(
+				ErrorCode.INVALID_INFORMATION
+			)
+		);
+
+		return worker.work();
 	}
 
 	public void scheduleLog(NVerseHttpRequestWrapper request, String logMessage, String reporter) {
@@ -146,6 +170,58 @@ public abstract class AbstractPostEntityController<
 			new ArrayList<>(),
 			worker
 		);
+	}
+
+	@Override
+	public <
+		N1,
+		N2,
+		W extends BehemothControllerWorker<RainEntity<N2>>
+	> String postEntityCustomResponse(
+		NVerseHttpRequestWrapper request,
+		String methodName,
+		int surveillanceCode,
+		String unAuthPostMessage,
+		String successLogMessage,
+		NVerseValidator<N1> validator,
+		NVerseSanitizer<N1, N1> sanitizer,
+		N1 entity,
+		W worker
+	) {
+
+		BehemothPreCheck<B, L, A, T, E, R> preCheck = new BehemothPreCheck<>(
+			this.getRainTree(),
+			this.getLogBook(),
+			this.getCron(),
+			this.getGatekeeper(),
+			this.getAuthorityResolver(),
+			this.getHttpRequestDumpSanitizer()
+		);
+
+		if (!preCheck.success(
+			request,
+			surveillanceCode,
+			unAuthPostMessage,
+			this.getClassName(),
+			methodName
+		)) return preCheck.failureResponse();
+
+		RainEntity<N2> response = this.post(validator, entity, sanitizer, worker);
+
+		if (response.success)
+			this.scheduleLog(
+				request,
+				successLogMessage,
+				this.getLogBook().prepareLogReporter(
+					preCheck.getUser(),
+					ReporterID.prepareID(
+						this.getClassName(),
+						methodName
+					)
+				)
+			);
+
+		return this.getRainTree().renderResponse(response);
 	}
 
 	@Override
@@ -289,6 +365,38 @@ public abstract class AbstractPostEntityController<
 			new ArrayList<>(),
 			worker
 		);
+	}
+
+	@Override
+	public <
+		N1,
+		N2,
+		W extends BehemothControllerWorker<RainEntity<N2>>
+	> String postEntityCustomResponseUnauthorized(
+		NVerseHttpRequestWrapper request,
+		String methodName,
+		String successLogMessage,
+		NVerseValidator<N1> validator,
+		NVerseSanitizer<N1, N1> sanitizer,
+		N1 entity,
+		W worker
+	) {
+
+		RainEntity<N2> response = this.post(validator, entity, sanitizer, worker);
+
+		if (response.success)
+			this.scheduleLog(
+				request,
+				successLogMessage,
+				this.getLogBook().prepareUnauthorizedLogReporter(
+					ReporterID.prepareID(
+						this.getClassName(),
+						methodName
+					)
+				)
+			);
+
+		return this.getRainTree().renderResponse(response);
 	}
 
 	@Override

@@ -6,6 +6,7 @@ import com.bloomscorp.alfred.orm.AuthenticationLog;
 import com.bloomscorp.alfred.orm.LOG_TYPE;
 import com.bloomscorp.alfred.orm.Log;
 import com.bloomscorp.alfred.support.ReporterID;
+import com.bloomscorp.behemoth.orm.BehemothORM;
 import com.bloomscorp.behemoth.pojo.BehemothMiddlewareResult;
 import com.bloomscorp.behemoth.service.BehemothMiddleware;
 import com.bloomscorp.behemoth.service.BehemothMiddlewareRunner;
@@ -58,6 +59,12 @@ public abstract class AbstractPostEntityController<
 		);
 	}
 
+	private <N> void setVersion(N entity) {
+		if (entity instanceof BehemothORM && (((BehemothORM) entity).id == 0)) {
+			((BehemothORM) entity).version = 0L;
+		}
+	}
+
 	private <
 		N,
 		W extends BehemothControllerWorker<P>,
@@ -78,6 +85,8 @@ public abstract class AbstractPostEntityController<
 				ErrorCode.INVALID_INFORMATION
 			)
 		);
+
+		this.setVersion(entity);
 
 		P result = worker.work();
 
@@ -105,6 +114,8 @@ public abstract class AbstractPostEntityController<
 				ErrorCode.INVALID_INFORMATION
 			)
 		);
+
+		this.setVersion(entity);
 
 		return worker.work();
 	}

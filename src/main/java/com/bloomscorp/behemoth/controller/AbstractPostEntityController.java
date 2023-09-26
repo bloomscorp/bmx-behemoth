@@ -60,7 +60,11 @@ public abstract class AbstractPostEntityController<
 	}
 
 	private <N> void setVersion(N entity) {
-		if (entity instanceof BehemothORM && (((BehemothORM) entity).id == 0)) {
+		if (
+			(entity instanceof BehemothORM)
+			&& (((BehemothORM) entity).id != null)
+			&& (((BehemothORM) entity).id == 0)
+		) {
 			((BehemothORM) entity).version = 0L;
 		}
 	}

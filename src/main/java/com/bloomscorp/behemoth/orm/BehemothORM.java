@@ -29,7 +29,7 @@ public class BehemothORM {
     public Long id;
 
     @Version
-    @Setter(AccessLevel.PROTECTED)
+    @Setter
     @Column(
             name = BehemothContract.VERSION,
             columnDefinition = "BIGSERIAL",

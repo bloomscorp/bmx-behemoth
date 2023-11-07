@@ -14,8 +14,12 @@ import com.bloomscorp.nverse.NVerseHttpRequestWrapper;
 import com.bloomscorp.nverse.pojo.NVerseRole;
 import com.bloomscorp.nverse.pojo.NVerseTenant;
 import com.bloomscorp.nverse.sanitizer.HttpRequestDumpSanitizer;
+import com.bloomscorp.nverse.sanitizer.NVerseSanitizer;
+import com.bloomscorp.nverse.validator.NVerseValidator;
 import com.bloomscorp.raintree.RainTree;
 import com.bloomscorp.raintree.RainTreeResponse;
+import com.bloomscorp.raintree.restful.RainEnhancedResponse;
+import com.bloomscorp.raintree.restful.RainResponse;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -51,11 +55,81 @@ public abstract class AbstractDeleteEntityController<
 		return ActionCode.message(success ? ActionCode.DELETE_SUCCESS : ActionCode.DELETE_FAILURE);
 	}
 
+	private <
+		N,
+		W extends BehemothControllerWorker<P>,
+		P
+		> @NotNull RainTreeResponse delete(
+		N entity,
+		@NotNull W worker,
+		RainEnhancedResponse<N, P> enhancedResponse
+	) {
+		P result = worker.work();
+
+		if (result instanceof Integer && (enhancedResponse == null))
+			return RainResponse.prepareActionResponse((Integer) result);
+
+		return enhancedResponse.prepareResponse(result);
+	}
+
+	private <
+		N,
+		W extends BehemothControllerWorker<P>,
+		P
+		> @NotNull RainTreeResponse delete(
+		NVerseHttpRequestWrapper request,
+		String methodName,
+		int surveillanceCode,
+		String unAuthDeleteMessage,
+		String successLogMessage,
+		W worker,
+		N entity,
+		RainEnhancedResponse<N, P> enhancedResponse
+	) {
+
+		BehemothPreCheck<B, L, A, T, E, R> preCheck = new BehemothPreCheck<>(
+			this.getRainTree(),
+			this.getLogBook(),
+			this.getCron(),
+			this.getGatekeeper(),
+			this.getAuthorityResolver(),
+			this.getHttpRequestDumpSanitizer()
+		);
+
+		if (!preCheck.success(
+			request,
+			surveillanceCode,
+			unAuthDeleteMessage,
+			this.getClassName(),
+			methodName
+		)) return new RainTreeResponse(
+			false,
+			preCheck.failureMessage()
+		);
+
+		RainTreeResponse response = this.delete(entity, worker, enhancedResponse);
+
+		if (response.success)
+			this.scheduleLog(
+				request,
+				successLogMessage,
+				this.getLogBook().prepareLogReporter(
+					preCheck.getUser(),
+					ReporterID.prepareID(
+						this.getClassName(),
+						methodName
+					)
+				)
+			);
+
+		return response;
+	}
+
 	private <W extends BehemothControllerWorker<Boolean>> @NotNull RainTreeResponse delete(
 		NVerseHttpRequestWrapper request,
 		String methodName,
 		int surveillanceCode,
-		String unAuthPostMessage,
+		String unAuthDeleteMessage,
 		String successLogMessage,
 		W worker
 	) {
@@ -72,7 +146,7 @@ public abstract class AbstractDeleteEntityController<
 		if (!preCheck.success(
 			request,
 			surveillanceCode,
-			unAuthPostMessage,
+			unAuthDeleteMessage,
 			this.getClassName(),
 			methodName
 		)) return new RainTreeResponse(
@@ -108,7 +182,7 @@ public abstract class AbstractDeleteEntityController<
 		NVerseHttpRequestWrapper request,
 		String methodName,
 		int surveillanceCode,
-		String unAuthPostMessage,
+		String unAuthDeleteMessage,
 		String successLogMessage,
 		N entity,
 		W worker
@@ -117,7 +191,7 @@ public abstract class AbstractDeleteEntityController<
 			request,
 			methodName,
 			surveillanceCode,
-			unAuthPostMessage,
+			unAuthDeleteMessage,
 			successLogMessage,
 			worker
 		);
@@ -128,18 +202,46 @@ public abstract class AbstractDeleteEntityController<
 		NVerseHttpRequestWrapper request,
 		String methodName,
 		int surveillanceCode,
-		String unAuthPostMessage,
+		String unAuthDeleteMessage,
 		String successLogMessage,
 		Long id,
 		W worker
+	) {
+		// TODO: check where id is used
+		return this.delete(
+			request,
+			methodName,
+			surveillanceCode,
+			unAuthDeleteMessage,
+			successLogMessage,
+			worker
+		);
+	}
+
+	@Override
+	public <
+		N,
+		W extends BehemothControllerWorker<P>,
+		P
+	> RainTreeResponse deleteEntityEnhancedResponse(
+		NVerseHttpRequestWrapper request,
+		String methodName,
+		int surveillanceCode,
+		String unAuthDeleteMessage,
+		String successLogMessage,
+		N entity,
+		W worker,
+		RainEnhancedResponse<N, P> enhancedResponse
 	) {
 		return this.delete(
 			request,
 			methodName,
 			surveillanceCode,
-			unAuthPostMessage,
+			unAuthDeleteMessage,
 			successLogMessage,
-			worker
+			worker,
+			entity,
+			enhancedResponse
 		);
 	}
 }

@@ -55,12 +55,58 @@ public abstract class AbstractDeleteEntityController<
 		return ActionCode.message(success ? ActionCode.DELETE_SUCCESS : ActionCode.DELETE_FAILURE);
 	}
 
+	private @NotNull RainTreeResponse performDelete(
+		NVerseHttpRequestWrapper request,
+		String methodName,
+		int surveillanceCode,
+		String unAuthDeleteMessage,
+		String successLogMessage,
+		BehemothControllerWorker<RainTreeResponse> prepareResponse
+	) {
+
+		BehemothPreCheck<B, L, A, T, E, R> preCheck = new BehemothPreCheck<>(
+			this.getRainTree(),
+			this.getLogBook(),
+			this.getCron(),
+			this.getGatekeeper(),
+			this.getAuthorityResolver(),
+			this.getHttpRequestDumpSanitizer()
+		);
+
+		if (!preCheck.success(
+			request,
+			surveillanceCode,
+			unAuthDeleteMessage,
+			this.getClassName(),
+			methodName
+		)) return new RainTreeResponse(
+			false,
+			preCheck.failureMessage()
+		);
+
+		RainTreeResponse response = prepareResponse.work();
+
+		if (response.success)
+			this.scheduleLog(
+				request,
+				successLogMessage,
+				this.getLogBook().prepareLogReporter(
+					preCheck.getUser(),
+					ReporterID.prepareID(
+						this.getClassName(),
+						methodName
+					)
+				)
+			);
+
+		return response;
+	}
+
 	private <
 		N,
 		W extends BehemothControllerWorker<P>,
 		P
-		> @NotNull RainTreeResponse delete(
-		N entity,
+	> @NotNull RainTreeResponse delete(
 		@NotNull W worker,
 		RainEnhancedResponse<N, P> enhancedResponse
 	) {
@@ -76,53 +122,23 @@ public abstract class AbstractDeleteEntityController<
 		N,
 		W extends BehemothControllerWorker<P>,
 		P
-		> @NotNull RainTreeResponse delete(
+	> @NotNull RainTreeResponse delete(
 		NVerseHttpRequestWrapper request,
 		String methodName,
 		int surveillanceCode,
 		String unAuthDeleteMessage,
 		String successLogMessage,
 		W worker,
-		N entity,
 		RainEnhancedResponse<N, P> enhancedResponse
 	) {
-
-		BehemothPreCheck<B, L, A, T, E, R> preCheck = new BehemothPreCheck<>(
-			this.getRainTree(),
-			this.getLogBook(),
-			this.getCron(),
-			this.getGatekeeper(),
-			this.getAuthorityResolver(),
-			this.getHttpRequestDumpSanitizer()
-		);
-
-		if (!preCheck.success(
+		return this.performDelete(
 			request,
+			methodName,
 			surveillanceCode,
 			unAuthDeleteMessage,
-			this.getClassName(),
-			methodName
-		)) return new RainTreeResponse(
-			false,
-			preCheck.failureMessage()
+			successLogMessage,
+			() -> this.delete(worker, enhancedResponse)
 		);
-
-		RainTreeResponse response = this.delete(entity, worker, enhancedResponse);
-
-		if (response.success)
-			this.scheduleLog(
-				request,
-				successLogMessage,
-				this.getLogBook().prepareLogReporter(
-					preCheck.getUser(),
-					ReporterID.prepareID(
-						this.getClassName(),
-						methodName
-					)
-				)
-			);
-
-		return response;
 	}
 
 	private <W extends BehemothControllerWorker<Boolean>> @NotNull RainTreeResponse delete(
@@ -133,48 +149,20 @@ public abstract class AbstractDeleteEntityController<
 		String successLogMessage,
 		W worker
 	) {
-
-		BehemothPreCheck<B, L, A, T, E, R> preCheck = new BehemothPreCheck<>(
-			this.getRainTree(),
-			this.getLogBook(),
-			this.getCron(),
-			this.getGatekeeper(),
-			this.getAuthorityResolver(),
-			this.getHttpRequestDumpSanitizer()
-		);
-
-		if (!preCheck.success(
+		return this.performDelete(
 			request,
+			methodName,
 			surveillanceCode,
 			unAuthDeleteMessage,
-			this.getClassName(),
-			methodName
-		)) return new RainTreeResponse(
-			false,
-			preCheck.failureMessage()
+			successLogMessage,
+			() -> {
+				boolean success = worker.work();
+				return new RainTreeResponse(
+					success,
+					this.prepareResponseMessage(success)
+				);
+			}
 		);
-
-		boolean success = worker.work();
-
-		RainTreeResponse response = new RainTreeResponse(
-			success,
-			this.prepareResponseMessage(success)
-		);
-
-		if (response.success)
-			this.scheduleLog(
-				request,
-				successLogMessage,
-				this.getLogBook().prepareLogReporter(
-					preCheck.getUser(),
-					ReporterID.prepareID(
-						this.getClassName(),
-						methodName
-					)
-				)
-			);
-
-		return response;
 	}
 
 	@Override
@@ -240,7 +228,6 @@ public abstract class AbstractDeleteEntityController<
 			unAuthDeleteMessage,
 			successLogMessage,
 			worker,
-			entity,
 			enhancedResponse
 		);
 	}

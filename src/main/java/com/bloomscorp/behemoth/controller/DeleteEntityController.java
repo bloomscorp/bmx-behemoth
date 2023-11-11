@@ -9,6 +9,7 @@ import com.bloomscorp.raintree.restful.RainEnhancedResponse;
 
 public interface DeleteEntityController {
 
+    // TODO actual entity might not be needed here!
     <E, W extends BehemothControllerWorker<Boolean>> RainTreeResponse deleteEntity(
             NVerseHttpRequestWrapper request,
             String methodName,

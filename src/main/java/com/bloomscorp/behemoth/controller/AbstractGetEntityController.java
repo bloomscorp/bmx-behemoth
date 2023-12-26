@@ -16,7 +16,10 @@ import com.bloomscorp.nverse.NVerseHttpRequestWrapper;
 import com.bloomscorp.nverse.pojo.NVerseRole;
 import com.bloomscorp.nverse.pojo.NVerseTenant;
 import com.bloomscorp.nverse.sanitizer.HttpRequestDumpSanitizer;
+import com.bloomscorp.nverse.sanitizer.NVerseSanitizer;
+import com.bloomscorp.nverse.validator.NVerseValidator;
 import com.bloomscorp.raintree.RainTree;
+import com.bloomscorp.raintree.RainTreeResponse;
 import com.bloomscorp.raintree.restful.RainEntity;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -101,6 +104,36 @@ public abstract class AbstractGetEntityController<
             surveillanceCode,
             unAuthAccessMessage
         );
+    }
+
+    @Override
+    public <W extends BehemothControllerWorker<Integer>> String getEntity(
+        NVerseHttpRequestWrapper request,
+        String methodName,
+        int surveillanceCode,
+        String unAuthAccessMessage,
+        String successLogMessage,
+        List<BehemothMiddleware<?, ?>> middlewares,
+        W worker
+    ) {
+
+
+//        return this.getEntity(
+//            request,
+//            methodName,
+//            surveillanceCode,
+//            unAuthAccessMessage,
+//            middlewares,
+//            () -> {
+//
+//                return worker.work();
+//            }
+//        );
+
+        throw new UnsupportedOperationException("method is not yet supported in this version");
+
+
+
     }
 
     @Override

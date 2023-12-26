@@ -7,6 +7,7 @@ import com.bloomscorp.behemoth.worker.BehemothControllerWorker;
 import com.bloomscorp.nverse.NVerseHttpRequestWrapper;
 import com.bloomscorp.nverse.sanitizer.NVerseSanitizer;
 import com.bloomscorp.nverse.validator.NVerseValidator;
+import com.bloomscorp.raintree.RainTreeResponse;
 import com.bloomscorp.raintree.restful.RainEntity;
 
 import java.util.List;
@@ -28,6 +29,16 @@ public interface GetEntityController {
             int surveillanceCode,
             String unAuthAccessMessage,
             W worker
+    );
+
+    <W extends BehemothControllerWorker<Integer>> String getEntity(
+        NVerseHttpRequestWrapper request,
+        String methodName,
+        int surveillanceCode,
+        String unAuthAccessMessage,
+        String successLogMessage,
+        List<BehemothMiddleware<?, ?>> middlewares,
+        W worker
     );
 
     <W extends BehemothControllerWorker<RainEntity<?>>> String getEntityCustomResponse(

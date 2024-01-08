@@ -15,7 +15,7 @@
 
     <groupId>com.bloomscorp</groupId>
     <artifactId>bmx-behemoth</artifactId>
-    <version>0.0.22</version>
+    <version>0.0.23</version>
     <packaging>jar</packaging>
     <inceptionYear>2023</inceptionYear>
     <url>https://github.com/bloomscorp/bmx-behemoth</url>
@@ -83,7 +83,7 @@
         <dependency>
             <groupId>com.bloomscorp</groupId>
             <artifactId>bmx-nverse</artifactId>
-            <version>0.0.40</version>
+            <version>0.0.41</version>
         </dependency>
     </dependencies>
 

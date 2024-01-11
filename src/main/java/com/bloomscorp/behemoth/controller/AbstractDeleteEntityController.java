@@ -141,7 +141,8 @@ public abstract class AbstractDeleteEntityController<
 		);
 	}
 
-	private <W extends BehemothControllerWorker<Boolean>> @NotNull RainTreeResponse delete(
+	@Override
+	public <W extends BehemothControllerWorker<Boolean>> @NotNull RainTreeResponse delete(
 		NVerseHttpRequestWrapper request,
 		String methodName,
 		int surveillanceCode,
@@ -162,26 +163,6 @@ public abstract class AbstractDeleteEntityController<
 					this.prepareResponseMessage(success)
 				);
 			}
-		);
-	}
-
-	@Override
-	public <N, W extends BehemothControllerWorker<Boolean>> RainTreeResponse deleteEntity(
-		NVerseHttpRequestWrapper request,
-		String methodName,
-		int surveillanceCode,
-		String unAuthDeleteMessage,
-		String successLogMessage,
-		N entity,
-		W worker
-	) {
-		return this.delete(
-			request,
-			methodName,
-			surveillanceCode,
-			unAuthDeleteMessage,
-			successLogMessage,
-			worker
 		);
 	}
 

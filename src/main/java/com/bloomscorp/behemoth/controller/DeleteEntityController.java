@@ -9,25 +9,23 @@ import com.bloomscorp.raintree.restful.RainEnhancedResponse;
 
 public interface DeleteEntityController {
 
-    // TODO actual entity might not be needed here!
-    <E, W extends BehemothControllerWorker<Boolean>> RainTreeResponse deleteEntity(
-            NVerseHttpRequestWrapper request,
-            String methodName,
-            int surveillanceCode,
-            String unAuthDeleteMessage,
-            String successLogMessage,
-            E entity,
-            W worker
+    <W extends BehemothControllerWorker<Boolean>> RainTreeResponse delete(
+        NVerseHttpRequestWrapper request,
+        String methodName,
+        int surveillanceCode,
+        String unAuthDeleteMessage,
+        String successLogMessage,
+        W worker
     );
 
     <W extends BehemothControllerWorker<Boolean>> RainTreeResponse deleteEntityByID(
-            NVerseHttpRequestWrapper request,
-            String methodName,
-            int surveillanceCode,
-            String unAuthDeleteMessage,
-            String successLogMessage,
-            Long id,
-            W worker
+        NVerseHttpRequestWrapper request,
+        String methodName,
+        int surveillanceCode,
+        String unAuthDeleteMessage,
+        String successLogMessage,
+        Long id,
+        W worker
     );
 
     <E, W extends BehemothControllerWorker<R>, R> RainTreeResponse deleteEntityEnhancedResponse(

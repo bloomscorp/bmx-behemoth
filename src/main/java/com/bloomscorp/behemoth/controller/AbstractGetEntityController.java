@@ -3,6 +3,7 @@ package com.bloomscorp.behemoth.controller;
 import com.bloomscorp.alfred.LogBook;
 import com.bloomscorp.alfred.cron.CronManager;
 import com.bloomscorp.alfred.orm.AuthenticationLog;
+import com.bloomscorp.alfred.orm.LOG_TYPE;
 import com.bloomscorp.alfred.orm.Log;
 import com.bloomscorp.alfred.support.ReporterID;
 import com.bloomscorp.behemoth.pojo.BehemothMiddlewareResult;
@@ -55,7 +56,9 @@ public abstract class AbstractGetEntityController<
         BehemothControllerWorker<String> prepareResponse,
         String methodName,
         int surveillanceCode,
-        String unAuthAccessMessage
+        String unAuthAccessMessage,
+        boolean shouldLog,
+        String successLogMessage
     ) {
 
         BehemothPreCheck<B, L, A, T, E, R> preCheck = new BehemothPreCheck<>(
@@ -75,7 +78,47 @@ public abstract class AbstractGetEntityController<
             methodName
         )) return preCheck.failureResponse();
 
+        if (shouldLog)
+            this.scheduleLog(
+                request,
+                successLogMessage,
+                this.getLogBook().prepareLogReporter(
+                    preCheck.getUser(),
+                    ReporterID.prepareID(
+                        this.getClassName(),
+                        methodName
+                    )
+                )
+            );
+
         return prepareResponse.work();
+    }
+
+    private String getEntity(
+        NVerseHttpRequestWrapper request,
+        BehemothControllerWorker<String> prepareResponse,
+        String methodName,
+        int surveillanceCode,
+        String unAuthAccessMessage
+    ) {
+        return this.getEntity(
+            request,
+            prepareResponse,
+            methodName,
+            surveillanceCode,
+            unAuthAccessMessage,
+            false,
+            null
+        );
+    }
+
+    public void scheduleLog(NVerseHttpRequestWrapper request, String logMessage, String reporter) {
+        this.getCron().scheduleLogTask(
+            logMessage,
+            reporter,
+            LOG_TYPE.ALERT,
+            this.getHttpRequestDumpSanitizer().getSanitized(request)
+        );
     }
 
     @Override
@@ -85,7 +128,9 @@ public abstract class AbstractGetEntityController<
         int surveillanceCode,
         String unAuthAccessMessage,
         List<BehemothMiddleware<?, ?>> middlewares,
-        W worker
+        W worker,
+        boolean shouldLog,
+        String successLogMessage
     ) {
         return this.getEntity(
             request,
@@ -102,12 +147,35 @@ public abstract class AbstractGetEntityController<
             },
             methodName,
             surveillanceCode,
-            unAuthAccessMessage
+            unAuthAccessMessage,
+            shouldLog,
+            successLogMessage
         );
     }
 
     @Override
-    public <W extends BehemothControllerWorker<Integer>> String getEntity(
+    public <W extends BehemothControllerWorker<String>> String getEntity(
+        NVerseHttpRequestWrapper request,
+        String methodName,
+        int surveillanceCode,
+        String unAuthAccessMessage,
+        List<BehemothMiddleware<?, ?>> middlewares,
+        W worker
+    ) {
+        return this.getEntity(
+            request,
+            methodName,
+            surveillanceCode,
+            unAuthAccessMessage,
+            middlewares,
+            worker,
+            false,
+            null
+        );
+    }
+
+    @Override
+    public <W extends BehemothControllerWorker<String>> String getEntity(
         NVerseHttpRequestWrapper request,
         String methodName,
         int surveillanceCode,
@@ -116,24 +184,16 @@ public abstract class AbstractGetEntityController<
         List<BehemothMiddleware<?, ?>> middlewares,
         W worker
     ) {
-
-
-//        return this.getEntity(
-//            request,
-//            methodName,
-//            surveillanceCode,
-//            unAuthAccessMessage,
-//            middlewares,
-//            () -> {
-//
-//                return worker.work();
-//            }
-//        );
-
-        throw new UnsupportedOperationException("method is not yet supported in this version");
-
-
-
+        return this.getEntity(
+            request,
+            methodName,
+            surveillanceCode,
+            unAuthAccessMessage,
+            middlewares,
+			worker,
+            true,
+            successLogMessage
+        );
     }
 
     @Override

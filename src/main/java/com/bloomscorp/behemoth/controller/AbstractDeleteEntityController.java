@@ -87,7 +87,7 @@ public abstract class AbstractDeleteEntityController<
 		RainTreeResponse response = prepareResponse.work();
 
 		if (response.success)
-			this.scheduleLog(
+			super.scheduleLog(
 				request,
 				successLogMessage,
 				this.getLogBook().prepareLogReporter(

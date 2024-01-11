@@ -124,15 +124,6 @@ public abstract class AbstractPostEntityController<
 		return worker.work();
 	}
 
-	public void scheduleLog(NVerseHttpRequestWrapper request, String logMessage, String reporter) {
-		this.getCron().scheduleLogTask(
-			logMessage,
-			reporter,
-			LOG_TYPE.ALERT,
-			this.getHttpRequestDumpSanitizer().getSanitized(request)
-		);
-	}
-
 	@Override
 	public <N, W extends BehemothControllerWorker<Integer>> RainTreeResponse postEntity(
 		NVerseHttpRequestWrapper request,
@@ -224,7 +215,7 @@ public abstract class AbstractPostEntityController<
 		RainEntity<N2> response = this.post(validator, entity, sanitizer, worker);
 
 		if (response.success)
-			this.scheduleLog(
+			super.scheduleLog(
 				request,
 				successLogMessage,
 				this.getLogBook().prepareLogReporter(
@@ -289,7 +280,7 @@ public abstract class AbstractPostEntityController<
 		RainTreeResponse response = this.post(validator, entity, sanitizer, worker, enhancedResponse);
 
 		if (response.success)
-			this.scheduleLog(
+			super.scheduleLog(
 				request,
 				successLogMessage,
 				this.getLogBook().prepareLogReporter(
@@ -400,7 +391,7 @@ public abstract class AbstractPostEntityController<
 		RainEntity<N2> response = this.post(validator, entity, sanitizer, worker);
 
 		if (response.success)
-			this.scheduleLog(
+			super.scheduleLog(
 				request,
 				successLogMessage,
 				this.getLogBook().prepareUnauthorizedLogReporter(
@@ -438,7 +429,7 @@ public abstract class AbstractPostEntityController<
 		RainTreeResponse response = this.post(validator, entity, sanitizer, worker, enhancedResponse);
 
 		if (response.success)
-			this.scheduleLog(
+			super.scheduleLog(
 				request,
 				successLogMessage,
 				this.getLogBook().prepareUnauthorizedLogReporter(

@@ -20,6 +20,17 @@ public interface GetEntityController {
         int surveillanceCode,
         String unAuthAccessMessage,
         List<BehemothMiddleware<?, ?>> middlewares,
+        W worker,
+        boolean shouldLog,
+        String successLogMessage
+    );
+
+    <W extends BehemothControllerWorker<String>> String getEntity(
+        NVerseHttpRequestWrapper request,
+        String methodName,
+        int surveillanceCode,
+        String unAuthAccessMessage,
+        List<BehemothMiddleware<?, ?>> middlewares,
         W worker
     );
 
@@ -31,7 +42,7 @@ public interface GetEntityController {
             W worker
     );
 
-    <W extends BehemothControllerWorker<Integer>> String getEntity(
+    <W extends BehemothControllerWorker<String>> String getEntity(
         NVerseHttpRequestWrapper request,
         String methodName,
         int surveillanceCode,

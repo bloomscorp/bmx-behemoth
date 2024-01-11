@@ -167,27 +167,6 @@ public abstract class AbstractDeleteEntityController<
 	}
 
 	@Override
-	public <W extends BehemothControllerWorker<Boolean>> RainTreeResponse deleteEntityByID(
-		NVerseHttpRequestWrapper request,
-		String methodName,
-		int surveillanceCode,
-		String unAuthDeleteMessage,
-		String successLogMessage,
-		Long id,
-		W worker
-	) {
-		// TODO: check where id is used
-		return this.delete(
-			request,
-			methodName,
-			surveillanceCode,
-			unAuthDeleteMessage,
-			successLogMessage,
-			worker
-		);
-	}
-
-	@Override
 	public <
 		N,
 		W extends BehemothControllerWorker<P>,

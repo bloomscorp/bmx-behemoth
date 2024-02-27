@@ -5,8 +5,10 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 @Getter
+@SuperBuilder
 @MappedSuperclass
 public class BehemothORM {
 

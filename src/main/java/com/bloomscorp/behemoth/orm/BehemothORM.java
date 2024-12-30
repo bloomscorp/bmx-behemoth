@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 @Getter
+@Setter
 @MappedSuperclass
 public class BehemothORM {
 
@@ -30,7 +31,6 @@ public class BehemothORM {
     public Long id;
 
     @Version
-    @Setter
     @Column(
             name = BehemothContract.VERSION,
             columnDefinition = "BIGSERIAL",

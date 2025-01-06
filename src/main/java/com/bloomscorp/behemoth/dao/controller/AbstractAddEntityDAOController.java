@@ -107,7 +107,29 @@ public abstract class AbstractAddEntityDAOController<
 	}
 
 	@Override
-	public int addNewEntities(List<E> entities) {
+	public int addNewEntities(@NotNull List<E> entities) {
+		try {
+
+			System.out.println("[Behemoth] Hibernate Version: " + org.hibernate.Version.getVersionString());
+
+			for (E entity : entities)
+				entity.id = null;
+
+			List<E> savedEntities = this.getRepository().saveAllAndFlush(entities);
+			for (E entity : savedEntities) {
+				if (entity.id == 0)
+					return ActionCode.INSERT_FAILURE;
+			}
+			return ActionCode.INSERT_SUCCESS;
+		} catch (HibernateException ignored) {
+			// TODO: log exception here
+			return ActionCode.INSERT_FAILURE;
+		}
+	}
+
+	@Override
+	@Deprecated
+	public int addNewEntitiesCompat(List<E> entities) {
 		try {
 			List<E> savedEntities = this.getRepository().saveAllAndFlush(entities);
 			for (E entity : savedEntities)

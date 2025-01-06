@@ -10,4 +10,5 @@ public interface AddEntityDAOController<E> {
 	Long addNewEntity(E entity, boolean getID);
 	Long addNewEntityCompat(E entity, boolean getID);
 	int addNewEntities(List<E> entities);
+	int addNewEntitiesCompat(List<E> entities);
 }

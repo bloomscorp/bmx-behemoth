@@ -3,6 +3,7 @@ package com.bloomscorp.behemoth.dao.controller;
 import com.bloomscorp.behemoth.orm.BehemothORM;
 import com.bloomscorp.hastar.code.ActionCode;
 import org.hibernate.HibernateException;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -17,7 +18,7 @@ public abstract class AbstractAddEntityDAOController<
 	}
 
 	@Override
-	public int addNewEntity(E entity) {
+	public int addNewEntity(@NotNull E entity) {
 		try {
 
 			System.out.println("[Behemoth] Hibernate Version: " + org.hibernate.Version.getVersionString());
@@ -46,20 +47,7 @@ public abstract class AbstractAddEntityDAOController<
 	}
 
 	@Override
-	public int addNewEntityAndFlush(E entity) {
-		try {
-			if (this.getRepository().saveAndFlush(entity).id > 0)
-				return ActionCode.INSERT_SUCCESS;
-			return ActionCode.INSERT_FAILURE;
-		} catch (HibernateException ignored) {
-			// TODO: log exception here
-			return ActionCode.INSERT_FAILURE;
-		}
-	}
-
-	@Override
-	@Deprecated
-	public int addNewEntityAndFlushCompat(E entity) {
+	public int addNewEntityAndFlush(@NotNull E entity) {
 		try {
 
 			System.out.println("[Behemoth] Hibernate Version: " + org.hibernate.Version.getVersionString());
@@ -75,7 +63,38 @@ public abstract class AbstractAddEntityDAOController<
 	}
 
 	@Override
+	@Deprecated
+	public int addNewEntityAndFlushCompat(E entity) {
+		try {
+			if (this.getRepository().saveAndFlush(entity).id > 0)
+				return ActionCode.INSERT_SUCCESS;
+			return ActionCode.INSERT_FAILURE;
+		} catch (HibernateException ignored) {
+			// TODO: log exception here
+			return ActionCode.INSERT_FAILURE;
+		}
+	}
+
+	@Override
 	public Long addNewEntity(E entity, boolean getID) {
+		try {
+
+			System.out.println("[Behemoth] Hibernate Version: " + org.hibernate.Version.getVersionString());
+			entity.id = null;
+
+			entity = this.getRepository().save(entity);
+			if (entity.id > 0)
+				return entity.id;
+			return (long) ActionCode.INSERT_FAILURE;
+		} catch (HibernateException ignored) {
+			// TODO: log exception here
+			return (long) ActionCode.INSERT_FAILURE;
+		}
+	}
+
+	@Override
+	@Deprecated
+	public Long addNewEntityCompat(E entity, boolean getID) {
 		try {
 			entity = this.getRepository().save(entity);
 			if (entity.id > 0)

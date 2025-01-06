@@ -8,5 +8,6 @@ public interface AddEntityDAOController<E> {
 	int addNewEntityAndFlush(E entity);
 	int addNewEntityAndFlushCompat(E entity);
 	Long addNewEntity(E entity, boolean getID);
+	Long addNewEntityCompat(E entity, boolean getID);
 	int addNewEntities(List<E> entities);
 }

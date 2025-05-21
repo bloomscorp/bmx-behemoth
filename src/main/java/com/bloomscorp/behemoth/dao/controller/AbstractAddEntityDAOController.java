@@ -20,10 +20,7 @@ public abstract class AbstractAddEntityDAOController<
 	@Override
 	public int addNewEntity(@NotNull E entity) {
 		try {
-
-			System.out.println("[Behemoth] Hibernate Version: " + org.hibernate.Version.getVersionString());
 			entity.id = null;
-
 			if (this.getRepository().save(entity).id > 0)
 				return ActionCode.INSERT_SUCCESS;
 			return ActionCode.INSERT_FAILURE;
@@ -49,10 +46,7 @@ public abstract class AbstractAddEntityDAOController<
 	@Override
 	public int addNewEntityAndFlush(@NotNull E entity) {
 		try {
-
-			System.out.println("[Behemoth] Hibernate Version: " + org.hibernate.Version.getVersionString());
 			entity.id = null;
-
 			if (this.getRepository().saveAndFlush(entity).id > 0)
 				return ActionCode.INSERT_SUCCESS;
 			return ActionCode.INSERT_FAILURE;
@@ -76,12 +70,9 @@ public abstract class AbstractAddEntityDAOController<
 	}
 
 	@Override
-	public Long addNewEntity(E entity, boolean getID) {
+	public Long addNewEntity(@NotNull E entity, boolean getID) {
 		try {
-
-			System.out.println("[Behemoth] Hibernate Version: " + org.hibernate.Version.getVersionString());
 			entity.id = null;
-
 			entity = this.getRepository().save(entity);
 			if (entity.id > 0)
 				return entity.id;
